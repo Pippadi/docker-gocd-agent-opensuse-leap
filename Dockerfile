@@ -26,12 +26,11 @@ RUN curl --fail --location --silent --show-error "https://download.gocd.org/bina
     chown -R ${UID}:0 /go-agent && \
     chmod -R g=u /go-agent
 
-FROM quay.io/centos/centos:stream9
+FROM opensuse/leap
 
 LABEL gocd.version="22.3.0" \
-  description="GoCD agent based on quay.io/centos/centos:stream9" \
-  maintainer="GoCD Team <go-cd-dev@googlegroups.com>" \
-  url="https://www.gocd.org" \
+  description="GoCD agent based on hub.docker.com/r/opensuse/leap" \
+  maintainer="Prithvi Vishak <prithvivishak@gmail.com>" \
   gocd.full.version="22.3.0-15301" \
   gocd.git.sha="9d23ed19a9ea46eaf7f18bd16671ae0569871f53"
 
@@ -52,12 +51,12 @@ RUN \
 # regardless of whatever dependencies get added
 # add user to root group for GoCD to work on openshift
   useradd -l -u ${UID} -g root -d /home/go -m go && \
-    dnf install --assumeyes glibc-langpack-en epel-release && \
-  dnf update -y && \
-  dnf upgrade -y && \
-  dnf install -y git mercurial subversion openssh-clients bash unzip procps procps-ng coreutils-single curl-minimal && \
-  dnf clean all && \
-  rm -rf /var/cache/dnf && \
+    zypper install -y glibc-lang && \
+  # zypper refresh && \
+  # zypper update -y && \
+  zypper install -y --no-recommends git mercurial subversion openssh-clients bash unzip procps curl tar xz bzip2 gzip && \
+  zypper clean --all && \
+  rm -rf /var/cache/zypper && \
   curl --fail --location --silent --show-error 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.5%2B8/OpenJDK17U-jre_x64_linux_hotspot_17.0.5_8.tar.gz' --output /tmp/jre.tar.gz && \
   mkdir -p /gocd-jre && \
   tar -xf /tmp/jre.tar.gz -C /gocd-jre --strip 1 && \
